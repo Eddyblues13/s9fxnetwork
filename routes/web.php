@@ -193,9 +193,9 @@ Route::prefix('admin')->group(function () {
         Route::post('/transfer/unblock/{id}', [AdminController::class, 'unblockTransfer'])->name('transfer.unblock');
         Route::post('/account/suspend/{id}', [AdminController::class, 'suspendAccount'])->name('account.suspend');
         Route::post('/account/unblock/{id}', [AdminController::class, 'unblockAccount'])->name('account.unblock');
-        
-        
-              // Toggle upgrade status (AJAX)
+
+
+        // Toggle upgrade status (AJAX)
         Route::post('/{user}/toggle-upgrade', [AdminController::class, 'toggleUpgrade'])
             ->name('admin.users.toggle-upgrade');
 
@@ -296,10 +296,11 @@ Route::prefix('admin')->group(function () {
         Route::get('/manage-withdrawal', [WithdrawalController::class, 'manageWithdrawalsPage'])->name('manage.withdrawals.page');
         Route::get('/view-withdrawal/{user_id}/{withdrawal_id}', [WithdrawalController::class, 'viewWithdrawal'])->name('view.withdrawal');;
         Route::get('process-withdrawal/{id}', [WithdrawalController::class, 'processWithdrawal'])->name('process.withdrawal');
+        Route::post('approve-withdrawal/{id}', [WithdrawalController::class, 'approveWithdrawal'])->name('approve.withdrawal');
         Route::get('delete-withdrawal/{id}', [WithdrawalController::class, 'deleteWithdrawal'])->name('delete.withdrawal');
 
         Route::resource('plans', PlanController::class);
-          // Wallet resource routes
+        // Wallet resource routes
         Route::resource('wallets', WalletDetailController::class);
     });
 });

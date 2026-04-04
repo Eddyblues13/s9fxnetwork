@@ -41,6 +41,8 @@
 											<span class="badge badge-danger">Pending</span>
 											@elseif($with->status=='1')
 											<span class="badge badge-success">Processed</span>
+											@elseif($with->status=='2')
+											<span class="badge badge-warning">Declined</span>
 											@endif
 
 										</td>

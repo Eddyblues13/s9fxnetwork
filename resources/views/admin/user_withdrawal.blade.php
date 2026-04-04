@@ -67,7 +67,7 @@
                     </div>
 
                     <div class="mt-1">
-                        <form action="{{ url('approve-withdrawal/'.$withdrawal_details->id) }}" method="POST">
+                        <form action="{{ url('admin/approve-withdrawal/'.$withdrawal_details->id) }}" method="POST">
                             @csrf
                             <div class="form-row">
                                 <div class="form-group col-md-12">
