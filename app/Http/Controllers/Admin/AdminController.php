@@ -948,12 +948,10 @@ class AdminController extends Controller
 
     public function paymentSettings()
     {
-        // Fetch all investment plans from the database
-        $data['plans'] = InvestmentPlan::all();
-        return view('admin.manage_investment_plan', $data);
+        return redirect()->route('wallets.index');
     }
-    
-       public function toggleUpgrade(Request $request, User $user)
+
+    public function toggleUpgrade(Request $request, User $user)
     {
         try {
             // Toggle the current status
@@ -962,17 +960,16 @@ class AdminController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => $user->needs_upgrade 
-                    ? 'User marked as needing upgrade' 
+                'message' => $user->needs_upgrade
+                    ? 'User marked as needing upgrade'
                     : 'User account approved successfully',
                 'needs_upgrade' => $user->needs_upgrade,
                 'new_status_text' => $user->needs_upgrade ? 'Upgrade Required' : 'Account Active',
                 'new_button_text' => $user->needs_upgrade ? 'Approve Account' : 'Require Upgrade'
             ]);
-
         } catch (\Exception $e) {
             \Log::error("Failed to toggle upgrade status for user {$user->id}: " . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update user status'

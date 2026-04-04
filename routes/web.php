@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\KycController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\TradeController;
-use App\Http\Controllers\Admin\WalletController;
 use App\Http\Controllers\Admin\DepositController;
 use App\Http\Controllers\Admin\BrandingController;
 use App\Http\Controllers\Auth\AdminLoginController;
@@ -252,8 +251,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/smtp-settings', [SmtpSettingController::class, 'index'])->name('smtp.settings');
         Route::post('/smtp-settings', [SmtpSettingController::class, 'update'])->name('smtp.update');
 
-        // Wallet resource routes
-        Route::resource('wallets', WalletController::class);
         // Deposit resource routes
         Route::resource('deposits', DepositController::class);
         Route::patch('deposits/{deposit}/approve', [DepositController::class, 'approve'])->name('deposits.approve');

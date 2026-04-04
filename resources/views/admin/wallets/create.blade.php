@@ -2,8 +2,19 @@
 <div class="main-panel bg-dark">
     <div class="content bg-dark">
         <div class="page-inner">
-            <div class="mt-2 mb-4">
+            @if($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+            <div class="mt-2 mb-4 d-flex justify-content-between align-items-center">
                 <h1 class="title1 text-light">Add New Wallet</h1>
+                <a href="{{ route('wallets.index') }}" class="btn btn-primary btn-sm"><i class="fa fa-arrow-left"></i>
+                    Back</a>
             </div>
 
             <div class="mb-5 row">

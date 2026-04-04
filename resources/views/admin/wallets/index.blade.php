@@ -2,6 +2,9 @@
 <div class="main-panel bg-dark">
     <div class="content bg-dark">
         <div class="page-inner">
+            @if(session('message'))
+            <div class="alert alert-success mb-2">{{ session('message') }}</div>
+            @endif
             <div class="mt-2 mb-4">
                 <h1 class="title1 text-light">Wallets List</h1>
             </div>
@@ -25,7 +28,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($walletDetails as $key => $wallet)
+                                    @forelse($wallets as $key => $wallet)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $wallet->type }}</td>

@@ -10,7 +10,6 @@ class WalletDetailController extends Controller
 {
     public function index()
     {
-        $data['walletDetails'] = WalletDetail::all();
         $data['wallets'] = WalletDetail::paginate(10);
         return view('admin.wallets.index', $data);
     }
