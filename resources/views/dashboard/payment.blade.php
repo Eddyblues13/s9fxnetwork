@@ -22,21 +22,20 @@
       <div class="mt-2 mb-4">
         <p class="title1 text-primary">Send <strong>${{$amount}}</strong> {{$item}} to the address below</p>
       </div>
-      
+
       <div class="card-body bg-dark">
-    @php
+        @php
         $wallet = \App\Models\WalletDetail::where('type', $item)->first();
-    @endphp
+        @endphp
 
-    @if($wallet)
-        <input type="text" id="myInput1" class="form-control bg-dark text-dark" 
-            value="{{ $wallet->address }}" readonly>
-    @else
+        @if($wallet)
+        <input type="text" id="myInput1" class="form-control bg-dark text-dark" value="{{ $wallet->address }}" readonly>
+        @else
         <p class="text-light">Wallet address not found</p>
-    @endif
+        @endif
 
-    <button class="btn btn-primary" type="button" id="button-addon2" onclick="copyAdr1()">Copy Address</button>
-</div>
+        <button class="btn btn-primary" type="button" id="button-addon2" onclick="copyAdr1()">Copy Address</button>
+      </div>
 
 
 
@@ -71,7 +70,7 @@
             @csrf
             <div class="form-group">
               <h5 class="text-light">Upload Payment proof after payment.</h5>
-              <input type="file" name="imagee" class="form-control col-lg-4   bg-dark   text-light" required>
+              <input type="file" name="image" class="form-control col-lg-4   bg-dark   text-light" required>
             </div>
             <input type="hidden" name="amount" value="{{$amount}}">
             <input type="hidden" name="payment_method" value="{{$item}}">

@@ -1256,7 +1256,7 @@ window.smartsupp||(function(d) {
     <script type="text/javascript">
         (function () {
             var options = {
-                whatsapp: "(765) 335-3669", // WhatsApp number
+                whatsapp: "+19083184143", // WhatsApp number
                 call_to_action: "Message us", // Call to action
                 position: "left", // Position may be 'right' or 'left'
             };

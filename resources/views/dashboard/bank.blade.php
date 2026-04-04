@@ -68,7 +68,7 @@
               <input type="file" name="image" class="form-control col-lg-4   bg-dark   text-light" required>
             </div>
             <input type="hidden" name="amount" value="{{$amount}}">
-            <input type="hidden" name="paymethd_method" value="{{$item}}">
+            <input type="hidden" name="payment_method" value="{{$item}}">
 
             <div class="form-group">
               <input type="submit" class="btn btn-dark" value="Submit Payment">

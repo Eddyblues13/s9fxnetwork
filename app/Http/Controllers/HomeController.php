@@ -29,9 +29,13 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Cloudinary\Cloudinary;
 
 class HomeController extends Controller
 {
+    protected $cloudinary;
+    protected $uploadApi;
+
     /**
      * Create a new controller instance.
      *
@@ -40,6 +44,8 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->cloudinary = new Cloudinary();
+        $this->uploadApi = $this->cloudinary->uploadApi();
     }
 
     /**
@@ -235,114 +241,114 @@ class HomeController extends Controller
 
         return view('dashboard.withdrawals');
     }
-    
-    
+
+
     public function getWithdrawal(Request $request)
-{
-    $data['credit_balance'] = Transaction::where('user_id', Auth::user()->id)->where('status', '1')->where('transaction', 'credit')->sum('credit');
-    $data['debit_balance'] = Transaction::where('user_id', Auth::user()->id)->where('status', '1')->where('transaction', 'debit')->sum('debit');
-    $data['total_balance'] = $data['credit_balance'] - $data['debit_balance'];
+    {
+        $data['credit_balance'] = Transaction::where('user_id', Auth::user()->id)->where('status', '1')->where('transaction', 'credit')->sum('credit');
+        $data['debit_balance'] = Transaction::where('user_id', Auth::user()->id)->where('status', '1')->where('transaction', 'debit')->sum('debit');
+        $data['total_balance'] = $data['credit_balance'] - $data['debit_balance'];
 
-    $method = $request->input('method');
-    $data['method'] = $method;
+        $method = $request->input('method');
+        $data['method'] = $method;
 
-    if ($data['total_balance'] <= 0) {
-        return back()->with('error', 'Your Balance Is Insufficient');
-    }
-
-    // Go to the correct form page
-    if ($method == 'Bank') {
-        return view('dashboard.withdraw-bank', $data);
-    }
-
-    return view('dashboard.withdraw-funds', $data);
-}
-
-
-public function makeWithdrawal(Request $request)
-{
-    $transaction_id = rand(76503737, 12344994);
-
-    // mode comes from both forms
-    $method = $request->input('mode');
-
-    // Validate based on method
-    if ($method === 'Bank') {
-        $request->validate([
-            'amount' => 'required|numeric|min:1',
-            'mode' => 'required|string',
-            'bank_name' => 'required|string|max:255',
-            'account_name' => 'required|string|max:255',
-            'account_number' => 'required|string|max:50',
-            'note' => 'nullable|string|max:1000',
-        ]);
-    } else {
-        $request->validate([
-            'amount' => 'required|numeric|min:1',
-            'mode' => 'required|string',
-            'wallet_address' => 'required|string|max:255',
-        ]);
-    }
-
-    // Balance check
-    $credit = Transaction::where('user_id', Auth::user()->id)->where('status', '1')->where('transaction', 'credit')->sum('credit');
-    $debit  = Transaction::where('user_id', Auth::user()->id)->where('status', '1')->where('transaction', 'debit')->sum('debit');
-    $total  = $credit - $debit;
-
-    $amount = (float) $request->input('amount');
-
-    if ($total <= 0 || $total < $amount) {
-        return redirect('withdrawals')->with('error', 'Your Balance Is Insufficient');
-    }
-
-    // Build "wallet_address" / payout details
-    if ($method === 'Bank') {
-        $bankDetails = "BANK: " . $request->bank_name
-            . " | ACC NAME: " . $request->account_name
-            . " | ACC NO: " . $request->account_number;
-
-        if (!empty($request->note)) {
-            $bankDetails .= " | NOTE: " . $request->note;
+        if ($data['total_balance'] <= 0) {
+            return back()->with('error', 'Your Balance Is Insufficient');
         }
 
-        $payoutDetails = $bankDetails;
-    } else {
-        $payoutDetails = $request->wallet_address;
+        // Go to the correct form page
+        if ($method == 'Bank') {
+            return view('dashboard.withdraw-bank', $data);
+        }
+
+        return view('dashboard.withdraw-funds', $data);
     }
 
-    // Save Withdrawal
-    $with = new Withdrawal;
-    $with->user_id = Auth::user()->id;
-    $with->transaction_id = $transaction_id;
-    $with->amount = $amount;
-    $with->status = 0;
-    $with->withdrawal_method = $method;
-    $with->wallet_address = $payoutDetails;
-    $with->save();
 
-    // Save Transaction (pending)
-    $transaction = new Transaction;
-    $transaction->user_id = Auth::user()->id;
-    $transaction->transaction_id = $transaction_id;
-    $transaction->transaction_type = "Withdrawal";
-    $transaction->transaction = "debit";
-    $transaction->credit = 0;
-    $transaction->debit = $amount;
-    $transaction->status = 0;
-    $transaction->save();
+    public function makeWithdrawal(Request $request)
+    {
+        $transaction_id = rand(76503737, 12344994);
 
-    // Notifications (optional)
-    $full_name = Auth::user()->name;
-    $email = Auth::user()->email;
+        // mode comes from both forms
+        $method = $request->input('mode');
 
-    $adminMsg = $full_name . " (" . $email . ") just made a " . $method . " withdrawal of $" . $amount . " | Details: " . $payoutDetails;
-    $userMsg = "Your $" . $amount . " " . $method . " withdrawal is under review, please wait for approval from the administrator.";
+        // Validate based on method
+        if ($method === 'Bank') {
+            $request->validate([
+                'amount' => 'required|numeric|min:1',
+                'mode' => 'required|string',
+                'bank_name' => 'required|string|max:255',
+                'account_name' => 'required|string|max:255',
+                'account_number' => 'required|string|max:50',
+                'note' => 'nullable|string|max:1000',
+            ]);
+        } else {
+            $request->validate([
+                'amount' => 'required|numeric|min:1',
+                'mode' => 'required|string',
+                'wallet_address' => 'required|string|max:255',
+            ]);
+        }
 
-    // Mail::to($email)->send(new UserWithdrawalEmail($userMsg));
-    // Mail::to('support@s9fxnetwork.com')->send(new MakeWithdrawalEmail($adminMsg));
+        // Balance check
+        $credit = Transaction::where('user_id', Auth::user()->id)->where('status', '1')->where('transaction', 'credit')->sum('credit');
+        $debit  = Transaction::where('user_id', Auth::user()->id)->where('status', '1')->where('transaction', 'debit')->sum('debit');
+        $total  = $credit - $debit;
 
-    return redirect('/user/withdrawals')->with('status', 'Withdrawal Successful, Please wait for approval');
-}
+        $amount = (float) $request->input('amount');
+
+        if ($total <= 0 || $total < $amount) {
+            return redirect('withdrawals')->with('error', 'Your Balance Is Insufficient');
+        }
+
+        // Build "wallet_address" / payout details
+        if ($method === 'Bank') {
+            $bankDetails = "BANK: " . $request->bank_name
+                . " | ACC NAME: " . $request->account_name
+                . " | ACC NO: " . $request->account_number;
+
+            if (!empty($request->note)) {
+                $bankDetails .= " | NOTE: " . $request->note;
+            }
+
+            $payoutDetails = $bankDetails;
+        } else {
+            $payoutDetails = $request->wallet_address;
+        }
+
+        // Save Withdrawal
+        $with = new Withdrawal;
+        $with->user_id = Auth::user()->id;
+        $with->transaction_id = $transaction_id;
+        $with->amount = $amount;
+        $with->status = 0;
+        $with->withdrawal_method = $method;
+        $with->wallet_address = $payoutDetails;
+        $with->save();
+
+        // Save Transaction (pending)
+        $transaction = new Transaction;
+        $transaction->user_id = Auth::user()->id;
+        $transaction->transaction_id = $transaction_id;
+        $transaction->transaction_type = "Withdrawal";
+        $transaction->transaction = "debit";
+        $transaction->credit = 0;
+        $transaction->debit = $amount;
+        $transaction->status = 0;
+        $transaction->save();
+
+        // Notifications (optional)
+        $full_name = Auth::user()->name;
+        $email = Auth::user()->email;
+
+        $adminMsg = $full_name . " (" . $email . ") just made a " . $method . " withdrawal of $" . $amount . " | Details: " . $payoutDetails;
+        $userMsg = "Your $" . $amount . " " . $method . " withdrawal is under review, please wait for approval from the administrator.";
+
+        // Mail::to($email)->send(new UserWithdrawalEmail($userMsg));
+        // Mail::to('support@s9fxnetwork.com')->send(new MakeWithdrawalEmail($adminMsg));
+
+        return redirect('/user/withdrawals')->with('status', 'Withdrawal Successful, Please wait for approval');
+    }
 
 
 
@@ -438,19 +444,20 @@ public function makeWithdrawal(Request $request)
 
         $deposit->wallet_id = $paymentMethodToWallet[$validatedData['payment_method']] ?? null;
 
-        // **Handle Image Upload (If Provided)**
+        // **Handle Image Upload (If Provided) - Upload to Cloudinary**
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-
-            // Generate a unique filename using timestamp and random string
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-            // Store the image in the 'public/uploads/deposits' directory
-            // Ensure that the 'uploads/deposits' directory exists within 'storage/app/public'
-            $file->storeAs('public/uploads/deposits', $filename);
-
-            // Save the filename or the storage path based on your requirements
-            $deposit->image = 'uploads/deposits/' . $filename;
+            $uploadResult = $this->uploadApi->upload(
+                $request->file('image')->getRealPath(),
+                [
+                    'folder' => 's9fxnetwork/deposits',
+                    'transformation' => [
+                        'width' => 800,
+                        'height' => 600,
+                        'crop' => 'limit'
+                    ]
+                ]
+            );
+            $deposit->image = $uploadResult['secure_url'];
         }
 
         // **Save the Deposit Record**
@@ -599,7 +606,7 @@ public function makeWithdrawal(Request $request)
 
 
 
- 
+
 
     public function verifyAccount()
     {
@@ -620,16 +627,35 @@ public function makeWithdrawal(Request $request)
         // ]);
         $kyc =  Auth::user();
         $kyc->kyc_status = 0;
-        $file_id_card = $request->file('card');
-        $file_passport = $request->file('pass');
-        $ext_id_card = $file_id_card->getClientOriginalExtension();
-        $ext_passport = $file_passport->getClientOriginalExtension();
-        $filename_id_card = time() . '.' . $ext_id_card;
-        $filename_passport = time() . '.' . $ext_passport;
-        $file_id_card->move('uploads/kyc/', $filename_id_card);
-        $file_passport->move('uploads/kyc/', $filename_passport);
-        $kyc->card =  $filename_id_card;
-        $kyc->pass =  $filename_passport;
+
+        // Upload ID card to Cloudinary
+        $cardResult = $this->uploadApi->upload(
+            $request->file('card')->getRealPath(),
+            [
+                'folder' => 's9fxnetwork/kyc',
+                'transformation' => [
+                    'width' => 800,
+                    'height' => 600,
+                    'crop' => 'limit'
+                ]
+            ]
+        );
+        $kyc->card = $cardResult['secure_url'];
+
+        // Upload passport/selfie to Cloudinary
+        $passResult = $this->uploadApi->upload(
+            $request->file('pass')->getRealPath(),
+            [
+                'folder' => 's9fxnetwork/kyc',
+                'transformation' => [
+                    'width' => 800,
+                    'height' => 600,
+                    'crop' => 'limit'
+                ]
+            ]
+        );
+        $kyc->pass = $passResult['secure_url'];
+
         $kyc->save();
         return redirect('user/ver-account')->with('status', 'Document updated successfully, please wait for approval');
     }

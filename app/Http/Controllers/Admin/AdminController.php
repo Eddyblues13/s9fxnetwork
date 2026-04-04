@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Cloudinary\Cloudinary;
 
 
 class AdminController extends Controller
@@ -657,12 +658,21 @@ class AdminController extends Controller
 
             $deposit->wallet_id = $paymentMethodToWallet[$request['t_type']] ?? null;
 
-            // Handle Image Upload (If Provided)
+            // Handle Image Upload (If Provided) - Upload to Cloudinary
             if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('public/uploads/deposits', $filename);
-                $deposit->image = 'uploads/deposits/' . $filename;
+                $cloudinary = new Cloudinary();
+                $uploadResult = $cloudinary->uploadApi()->upload(
+                    $request->file('image')->getRealPath(),
+                    [
+                        'folder' => 's9fxnetwork/deposits',
+                        'transformation' => [
+                            'width' => 800,
+                            'height' => 600,
+                            'crop' => 'limit'
+                        ]
+                    ]
+                );
+                $deposit->image = $uploadResult['secure_url'];
             }
 
             // Save the Deposit Record

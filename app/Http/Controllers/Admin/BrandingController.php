@@ -5,9 +5,19 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Models\BrandingSetting;
 use App\Http\Controllers\Controller;
+use Cloudinary\Cloudinary;
 
 class BrandingController extends Controller
 {
+    protected $cloudinary;
+    protected $uploadApi;
+
+    public function __construct()
+    {
+        $this->cloudinary = new Cloudinary();
+        $this->uploadApi = $this->cloudinary->uploadApi();
+    }
+
     public function index()
     {
         $branding = BrandingSetting::first();
@@ -20,38 +30,38 @@ class BrandingController extends Controller
 
         // Upload logo
         if ($request->hasFile('logo')) {
-            $file_logo = $request->file('logo');
-            $ext_logo = $file_logo->getClientOriginalExtension();
-            $filename_logo = time() . '_logo.' . $ext_logo;
-            $file_logo->move('uploads/branding/', $filename_logo);
-            $branding->logo = 'uploads/branding/' . $filename_logo;
+            $uploadResult = $this->uploadApi->upload(
+                $request->file('logo')->getRealPath(),
+                ['folder' => 's9fxnetwork/branding']
+            );
+            $branding->logo = $uploadResult['secure_url'];
         }
 
         // Upload footer logo
         if ($request->hasFile('footer_logo')) {
-            $file_footer_logo = $request->file('footer_logo');
-            $ext_footer_logo = $file_footer_logo->getClientOriginalExtension();
-            $filename_footer_logo = time() . '_footer_logo.' . $ext_footer_logo;
-            $file_footer_logo->move('uploads/branding/', $filename_footer_logo);
-            $branding->footer_logo = 'uploads/branding/' . $filename_footer_logo;
+            $uploadResult = $this->uploadApi->upload(
+                $request->file('footer_logo')->getRealPath(),
+                ['folder' => 's9fxnetwork/branding']
+            );
+            $branding->footer_logo = $uploadResult['secure_url'];
         }
 
         // Upload email logo
         if ($request->hasFile('email_logo')) {
-            $file_email_logo = $request->file('email_logo');
-            $ext_email_logo = $file_email_logo->getClientOriginalExtension();
-            $filename_email_logo = time() . '_email_logo.' . $ext_email_logo;
-            $file_email_logo->move('uploads/branding/', $filename_email_logo);
-            $branding->email_logo = 'uploads/branding/' . $filename_email_logo;
+            $uploadResult = $this->uploadApi->upload(
+                $request->file('email_logo')->getRealPath(),
+                ['folder' => 's9fxnetwork/branding']
+            );
+            $branding->email_logo = $uploadResult['secure_url'];
         }
 
         // Upload favicon
         if ($request->hasFile('favicon')) {
-            $file_favicon = $request->file('favicon');
-            $ext_favicon = $file_favicon->getClientOriginalExtension();
-            $filename_favicon = time() . '_favicon.' . $ext_favicon;
-            $file_favicon->move('uploads/branding/', $filename_favicon);
-            $branding->favicon = 'uploads/branding/' . $filename_favicon;
+            $uploadResult = $this->uploadApi->upload(
+                $request->file('favicon')->getRealPath(),
+                ['folder' => 's9fxnetwork/branding']
+            );
+            $branding->favicon = $uploadResult['secure_url'];
         }
 
         $branding->save();

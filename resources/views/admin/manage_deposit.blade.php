@@ -42,9 +42,9 @@
 									<td>${{number_format($dep->amount, 2, '.', ',')}}</td>
 									<td>{{$dep->payment_method}}</td>
 									<td>
-										@if($dep->proof)
-										<img src="{{ asset($dep->image) }}" alt="Payment Screenshot" width="100"
-											height="60">
+										@if($dep->image)
+										<img src="{{ str_starts_with($dep->image, 'http') ? $dep->image : asset($dep->image) }}"
+											alt="Payment Screenshot" width="100" height="60">
 										@else
 										<span>No Screenshot</span>
 										@endif

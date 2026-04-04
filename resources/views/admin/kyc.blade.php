@@ -68,8 +68,8 @@
 													data-dismiss="modal">&times;</button>
 											</div>
 											<div class="modal-body bg-dark">
-												<img src="{{ asset('uploads/kyc/'.$kycUser->card) }}" alt="ID Card"
-													class="img-fluid" />
+												<img src="{{ str_starts_with($kycUser->card, 'http') ? $kycUser->card : asset('uploads/kyc/'.$kycUser->card) }}"
+													alt="ID Card" class="img-fluid" />
 											</div>
 										</div>
 									</div>
@@ -86,7 +86,7 @@
 													data-dismiss="modal">&times;</button>
 											</div>
 											<div class="modal-body bg-dark">
-												<img src="{{ asset('uploads/kyc/'.$kycUser->pass) }}"
+												<img src="{{ str_starts_with($kycUser->pass, 'http') ? $kycUser->pass : asset('uploads/kyc/'.$kycUser->pass) }}"
 													alt="Passport Photo" class="img-fluid" />
 											</div>
 										</div>
