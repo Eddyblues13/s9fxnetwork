@@ -219,7 +219,7 @@ window.smartsupp||(function(d) {
                                             <a class="dropdown-item" href="{{route('user.withdrawals')}}">Withdraw</a>
                                             <a class="dropdown-item" href="{{route('user.buy.plan')}}">Buy Plan</a>
                                             <div class="dropdown-divider"></div>
-                                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            <form id="logout-form" action="{{ route('user.logout') }}" method="POST"
                                                 style="display: none;">
                                                 @csrf
                                             </form>
@@ -357,7 +357,7 @@ window.smartsupp||(function(d) {
                                 </a>
                             </li>
                             <li class="nav-item ">
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                <form id="logout-form" action="{{ route('user.logout') }}" method="POST"
                                     style="display: none;">
                                     @csrf
                                 </form>

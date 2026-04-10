@@ -61,12 +61,12 @@
                                     <i class="fas fa-envelope"></i> Contact Support
                                 </a>
                                 
-                                <a href="{{ route('logout') }}" class="btn btn-danger" 
+                                <a href="{{ route('user.logout') }}" class="btn btn-danger" 
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     <i class="fas fa-sign-out-alt"></i> Logout
                                 </a>
                                 
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                <form id="logout-form" action="{{ route('user.logout') }}" method="POST" style="display: none;">
                                     @csrf
                                 </form>
                             </div>

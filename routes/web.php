@@ -143,7 +143,7 @@ Route::prefix('user')->middleware('user')->group(function () {
     Route::post('/trading', [HomeController::class, 'Trading']);
     Route::post('/make-withdrawal', [HomeController::class, 'makeWithdrawal'])->name('user.make.withdrawal');
 
-    Route::post('/logout', [HomeController::class, 'logout'])->name('logout');
+    Route::post('/logout', [HomeController::class, 'logout'])->name('user.logout');
 });
 
 
@@ -156,7 +156,7 @@ Route::post('admin/login', [AdminLoginController::class, 'login'])->name('login.
 
 // Admin Routes
 Route::prefix('admin')->group(function () {
-    Route::post('logout', [AdminLoginController::class, 'logout'])->name('logout');
+    Route::post('logout', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
     // Protecting admin routes using the 'admin' middleware
     Route::middleware(['admin'])->group(function () { // Admin Profile Routes
