@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Mail\VerificationEmail;
+use App\Mail\SendUserEmail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -95,16 +96,14 @@ class CustomAuthController extends Controller
                 <p>We are so happy to have you on board, and thank you for joining us.</p>
                 <br>
                 <p>
-                <a href='https://cytopiacapital.com/home' style='display: inline-block; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;'>
+                <a href='https://s9fxnetwork.com/home' style='display: inline-block; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;'>
                 Continue To Your Account
                 </a>
                 </p>
                 <br>
                 <p>Don't hesitate to get in touch if you have any questions; we'll always get back to you</p>";
 
-
-
-                // Mail::to($email)->send(new WelcomeEmail($message));
+                Mail::to($email)->send(new SendUserEmail($message, 'Welcome to S9fx Network'));
 
                 return redirect()->route('home')->with('success', 'Your email has been verified successfully!');
             } else {
@@ -139,7 +138,7 @@ class CustomAuthController extends Controller
         We are so happy to have you on board, and thank you for joining us.
         </p>
         <p>
-       We just need to verify your email address before you can access cytopiacapital.
+       We just need to verify your email address before you can access S9fx Network.
        </p>
        <br>
        <p>

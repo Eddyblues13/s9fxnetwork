@@ -107,13 +107,13 @@ class RegisterController extends Controller
         // Prepare the email content
         $wMessage = "
             <p>Hello {$user->name},</p>
-            <p>We are so happy to have you on board.</p>
-            <p>Your email: <strong>{$user->email}</strong></p>
-            <p>Your password: <strong>{$data['password']}</strong></p>
+            <p>We are so happy to have you on board, and thank you for joining S9fx Network.</p>
+            <p>Your registered email: <strong>{$user->email}</strong></p>
+            <p>You can log in to your account at <a href='https://s9fxnetwork.com/login'>s9fxnetwork.com</a>.</p>
         ";
 
         // Send welcome email
-        // Mail::to($user->email)->send(new welcomeEmail($wMessage));
+        Mail::to($user->email)->send(new welcomeEmail($wMessage));
 
         return $user; // Return the created user instance
     }

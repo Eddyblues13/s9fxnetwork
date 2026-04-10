@@ -70,7 +70,7 @@
             @csrf
             <div class="form-group">
               <h5 class="text-light">Upload Payment proof after payment.</h5>
-              <input type="file" name="image" class="form-control col-lg-4   bg-dark   text-light" required>
+              <input type="file" name="image" class="form-control col-lg-4   bg-dark   text-light" accept="image/jpeg,image/png,image/gif" required>
             </div>
             <input type="hidden" name="amount" value="{{$amount}}">
             <input type="hidden" name="payment_method" value="{{$item}}">

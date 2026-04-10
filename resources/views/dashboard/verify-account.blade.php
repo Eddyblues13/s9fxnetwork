@@ -48,9 +48,9 @@
                         @csrf
                         <h5 class="text-light">Valid identity card. (e.g. Drivers license, international passport or any
                             government approved document).</h5>
-                        <input type="file" class="form-control   bg-dark  text-light" name="cardd" required><br>
+                        <input type="file" class="form-control   bg-dark  text-light" name="card" accept="image/jpeg,image/png" required><br>
                         <h5 class="text-light">Selfie Photo</h5>
-                        <input type="file" class="form-control   bg-dark  text-light" name="passs" required><br>
+                        <input type="file" class="form-control   bg-dark  text-light" name="pass" accept="image/jpeg,image/png" required><br>
                         <input type="submit" class="btn btn-dark" value="Submit documents">
                     </form>
                 </div>

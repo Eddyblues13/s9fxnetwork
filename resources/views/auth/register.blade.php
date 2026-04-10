@@ -31,6 +31,8 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="auth/css/vendors/uikit.min.css">
     <link rel="stylesheet" href="auth/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="auth/css/toastr.min.css">
 </head>
 
 <body>
@@ -66,11 +68,7 @@
                                     <p class="uk-text uk-margin-remove-top uk-margin-medium-bottom">Already have an
                                         account? <a href="{{route('login')}}">Login here</a></p>
                                     <!-- login form begin -->
-                                    @if (session('status'))
-                                    <div class="mb-4 font-medium text-sm text-green-600">
-                                        {{ session('status') }}
-                                    </div>
-                                    @endif
+
 
                                     <form method="POST" action="{{ route('register') }}">
                                         @csrf
@@ -364,14 +362,22 @@
                                         </div>
 
                                         <div class="uk-margin-small uk-width-1-1 uk-inline">
-                                            <span class="uk-form-icon uk-form-icon-flip fas fa-key fa-sm"></span>
+                                            <span class="uk-form-icon uk-form-icon-flip toggle-password"
+                                                style="cursor:pointer;pointer-events:auto;"
+                                                onclick="togglePassword('password', this)">
+                                                <i class="fas fa-eye fa-sm"></i>
+                                            </span>
                                             <input class="uk-input uk-border-rounded " id="password" type="password"
                                                 placeholder="Password" name="password" required
                                                 autocomplete="new-password">
                                         </div>
 
                                         <div class="uk-margin-small uk-width-1-1 uk-inline">
-                                            <span class="uk-form-icon uk-form-icon-flip fas fa-key fa-sm"></span>
+                                            <span class="uk-form-icon uk-form-icon-flip toggle-password"
+                                                style="cursor:pointer;pointer-events:auto;"
+                                                onclick="togglePassword('password-confirm', this)">
+                                                <i class="fas fa-eye fa-sm"></i>
+                                            </span>
                                             <input class="uk-input uk-border-rounded " id="password-confirm"
                                                 type="password" placeholder="Confirm Password"
                                                 name="password_confirmation" required autocomplete="new-password">
@@ -470,6 +476,44 @@ var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s,
 
     <script src="auth/js/vendors/uikit.min.js"></script>
     <script src="auth/js/vendors/indonez.min.js"></script>
+    <script>
+        if(!window.jQuery){document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"><\/script>')}
+    </script>
+    <script src="auth/js/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "5000"
+        };
+
+        @if(session('status'))
+            toastr.success("{{ session('status') }}");
+        @endif
+        @if(session('error'))
+            toastr.error("{{ session('error') }}");
+        @endif
+        @if($errors->any())
+            @foreach($errors->all() as $error)
+                toastr.error("{{ $error }}");
+            @endforeach
+        @endif
+
+        function togglePassword(inputId, el) {
+            var input = document.getElementById(inputId);
+            var icon = el.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 
 

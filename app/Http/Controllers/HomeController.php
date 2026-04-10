@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\SendUserEmail;
 use Cloudinary\Cloudinary;
 
 class HomeController extends Controller
@@ -101,19 +102,15 @@ class HomeController extends Controller
     }
 
     public function supportEmail(Request $request)
-
     {
+        $data = "
+            <p><strong>Name:</strong> " . e($request->name) . "</p>
+            <p><strong>Email:</strong> " . e($request->email) . "</p>
+            <p><strong>Message:</strong></p>
+            <p>" . e($request->message) . "</p>
+        ";
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'message' => $request->message,
-        ];
-
-
-
-
-        Mail::to('support@s9fxnetwork.com')->send(new SupportEmail($data));
+        Mail::to('support@s9fxnetwork.com')->send(new SendUserEmail($data, 'New Support Message'));
 
         return back()->with('status', 'Email Successfully sent');
     }
@@ -341,11 +338,11 @@ class HomeController extends Controller
         $full_name = Auth::user()->name;
         $email = Auth::user()->email;
 
-        $adminMsg = $full_name . " (" . $email . ") just made a " . $method . " withdrawal of $" . $amount . " | Details: " . $payoutDetails;
-        $userMsg = "Your $" . $amount . " " . $method . " withdrawal is under review, please wait for approval from the administrator.";
+        $adminMsg = "<p>" . e($full_name) . " (" . e($email) . ") just made a " . e($method) . " withdrawal of $" . e($amount) . "</p><p>Details: " . e($payoutDetails) . "</p>";
+        $userMsg = "<p>Your $" . e($amount) . " " . e($method) . " withdrawal is under review, please wait for approval from the administrator.</p>";
 
-        // Mail::to($email)->send(new UserWithdrawalEmail($userMsg));
-        // Mail::to('support@s9fxnetwork.com')->send(new MakeWithdrawalEmail($adminMsg));
+        Mail::to($email)->send(new SendUserEmail($userMsg, 'Withdrawal Request Received'));
+        Mail::to('support@s9fxnetwork.com')->send(new SendUserEmail($adminMsg, 'New Withdrawal Request'));
 
         return redirect('/user/withdrawals')->with('status', 'Withdrawal Successful, Please wait for approval');
     }
@@ -416,7 +413,7 @@ class HomeController extends Controller
         $validatedData = $request->validate([
             'amount' => 'required|numeric|min:1',
             'payment_method' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Adjust max size as needed
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // 2. **Generate a Unique Transaction ID**
@@ -481,15 +478,12 @@ class HomeController extends Controller
         $payment_method = $validatedData['payment_method'];
         $amount = $validatedData['amount'];
 
-        $adminNotification = "{$full_name} ({$email}) has made a {$payment_method} deposit of \${$amount}.";
-        $userNotification = "Your \${$amount} {$payment_method} deposit is under review. Please wait for approval from the administrator.";
+        $adminNotification = "<p>" . e($full_name) . " (" . e($email) . ") has made a " . e($payment_method) . " deposit of $" . e($amount) . ".</p>";
+        $userNotification = "<p>Your $" . e($amount) . " " . e($payment_method) . " deposit is under review. Please wait for approval from the administrator.</p>";
 
-        // 6. **Send Email Notifications (Optional)**
-        // Uncomment the lines below if you have set up the corresponding Mailable classes
-        /*
-        Mail::to($email)->send(new UserDepositEmail($userNotification));
-        Mail::to('support@s9fxnetwork.com')->send(new MakeDepositEmail($adminNotification));
-        */
+        // 6. **Send Email Notifications**
+        Mail::to($email)->send(new SendUserEmail($userNotification, 'Deposit Request Received'));
+        Mail::to('support@s9fxnetwork.com')->send(new SendUserEmail($adminNotification, 'New Deposit Request'));
 
         // 7. **Redirect Back with Success Message**
         return redirect()->route('user.deposit')->with('status', 'Deposit created successfully and is under review.');
@@ -588,11 +582,13 @@ class HomeController extends Controller
         $transaction->save();
 
         $email = Auth::user()->email;
+        $full_name = Auth::user()->name;
 
+        $userMsg = "<p>You have successfully purchased the <strong>" . e($plan_name) . "</strong> plan for <strong>$" . e($plan_amount) . "</strong> at " . e($plan_percentage) . " interest daily, starting from " . e($startDate) . " to " . e($endDate) . ".</p>";
+        $adminMsg = "<p>" . e($full_name) . " (" . e($email) . ") has purchased the <strong>" . e($plan_name) . "</strong> plan for <strong>$" . e($plan_amount) . "</strong>.</p>";
 
-        //Mail::to($email)->send(new primary($data));
-
-        //Mail::to('support@s9fxnetwork.com ')->send(new planEmail($data));
+        Mail::to($email)->send(new SendUserEmail($userMsg, 'Investment Plan Purchased'));
+        Mail::to('support@s9fxnetwork.com')->send(new SendUserEmail($adminMsg, 'New Investment Purchase'));
 
         return back()->with('status', 'Plan Has Been Purchased Successfully');
     }
@@ -621,10 +617,11 @@ class HomeController extends Controller
 
     public function uploadKyc(Request $request)
     {
-        // $validate->validate($request,[
-        //     'subject' => 'required',
-        //     'message' => 'required'
-        // ]);
+        $request->validate([
+            'card' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'pass' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+        ]);
+
         $kyc =  Auth::user();
         $kyc->kyc_status = 0;
 
