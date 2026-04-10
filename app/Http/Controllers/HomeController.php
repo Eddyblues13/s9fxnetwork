@@ -45,7 +45,7 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->cloudinary = new Cloudinary();
+        $this->cloudinary = new Cloudinary(config('cloudinary.cloud_url'));
         $this->uploadApi = $this->cloudinary->uploadApi();
     }
 
