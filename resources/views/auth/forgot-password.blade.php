@@ -7,148 +7,373 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="robots" content="index, follow" />
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Reset your S9fx Network account password. Regain access to your binary options and forex investment account.">
     <meta name="author" content="S9fx Network">
     <meta name="keywords" content="Password Reset, S9fx Network, Binary Options, Forex Trading">
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta name="theme-color" content="#e9e8f0" />
-    <meta name="csrf-token" content="nav7jsEwFtkwq44NeBsUpMBbXyFrC70Pg3ioYlb2">
+    <link rel="shortcut icon" href="{{ asset('auth/img/favicon.png') }}" type="image/x-icon">
+    <link rel="apple-touch-icon-precomposed" href="{{ asset('auth/img/favicon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="shortcut icon" href="auth/img/favicon.png" type="image/x-icon">
-    <link rel="apple-touch-icon-precomposed" href="auth/img/favicon.png">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    <link rel="stylesheet" href="auth/css/vendors/uikit.min.css">
-    <link rel="stylesheet" href="auth/css/style.css">
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            line-height: 1.6;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* Left panel - decorative */
+        .auth-panel-left {
+            display: none;
+            width: 55%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-panel-left::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.85) 0%, rgba(99, 102, 241, 0.85) 50%, rgba(139, 92, 246, 0.85) 100%);
+            z-index: 1;
+        }
+
+        .auth-panel-left img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .auth-panel-left-content {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .auth-panel-left-content .deco-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-panel-left-content .deco-icon svg {
+            width: 40px;
+            height: 40px;
+            stroke: #fff;
+        }
+
+        .auth-panel-left-content h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .auth-panel-left-content p {
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 380px;
+        }
+
+        /* Right panel - form */
+        .auth-panel-right {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            background: #0f172a;
+        }
+
+        .auth-form-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-logo {
+            display: block;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-logo img {
+            height: 48px;
+            width: auto;
+        }
+
+        .auth-heading {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-subheading {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        .auth-subheading a {
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .auth-subheading a:hover {
+            color: #a5b4fc;
+        }
+
+        /* Alert messages */
+        .alert {
+            padding: 0.875rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            color: #4ade80;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #f87171;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #475569;
+            pointer-events: none;
+        }
+
+        .input-wrapper .input-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8125rem 0.875rem 0.8125rem 2.75rem;
+            background: #1e293b;
+            border: 1.5px solid #334155;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 0.9375rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .form-input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #6366f1, #818cf8);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .form-footer a {
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-footer a:hover {
+            color: #a5b4fc;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .auth-panel-left {
+                display: block;
+            }
+
+            .auth-panel-right {
+                width: 45%;
+                padding: 3rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .auth-panel-right {
+                padding: 4rem;
+            }
+
+            .auth-form-container {
+                max-width: 440px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-heading {
+                font-size: 1.5rem;
+            }
+
+            .auth-panel-right {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- preloader begin -->
-    <div class="in-loader">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <!-- preloader end -->
+    <div class="auth-wrapper">
+        <!-- Left decorative panel -->
+        <div class="auth-panel-left">
+            <img src="{{ asset('auth/img/in-signin-image.jpg') }}" alt="">
+            <div class="auth-panel-left-content">
+                <div class="deco-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                </div>
+                <h2>Forgot your password?</h2>
+                <p>No worries — enter your email and we'll send you a link to reset it in seconds.</p>
+            </div>
+        </div>
 
-    <main>
-        <!-- section content begin -->
-        <div class="uk-section uk-padding-remove-vertical">
-            <div class="uk-container uk-container-expand">
-                <div class="uk-grid" data-uk-height-viewport="expand: true">
-                    <div class="uk-width-3-5@m uk-background-cover uk-background-center-right uk-visible@m uk-box-shadow-xlarge"
-                        style="background-image: url(auth/img/in-signin-image.jpg);">
-                    </div>
-                    <div class="uk-width-expand@m uk-flex uk-flex-middle">
-                        <div class="uk-grid uk-flex-center">
-                            <div class="uk-width-3-5@m">
-                                <div class="in-padding-horizontal@s">
-                                    <!-- module logo begin -->
-                                    <a class="uk-logo" href="index.php">
-                                        <img class="in-offset-top-10" src="{{asset('image/logo.png')}}"
-                                            data-src="{{asset('image/logo.png')}}" alt="logo" width="170" height="56"
-                                            data-uk-img>
-                                    </a>
-                                    <!-- module logo begin -->
-                                    <p class="uk-text-lead uk-margin-top uk-margin-remove-bottom">Reset Password</p>
-                                    <p class="uk-text uk-margin-remove-top uk-margin-medium-bottom">Remember your
-                                        password? <a href="{{ route('login') }}">Login here</a></p>
+        <!-- Right form panel -->
+        <div class="auth-panel-right">
+            <div class="auth-form-container">
+                <a class="auth-logo" href="/">
+                    <img src="{{ asset('image/logo.png') }}" alt="S9fx Network">
+                </a>
 
-                                    @if (session('status'))
-                                    <div class="alert alert-success text-success" style="color: green;" role="alert">
-                                        {{ session('status') }}
-                                    </div>
-                                    @endif
+                <h1 class="auth-heading">Reset Password</h1>
+                <p class="auth-subheading">Remember your password? <a href="{{ route('login') }}">Sign in</a></p>
 
-                                    <form method="POST" action="{{ route('password.email') }}">
-                                        @csrf
+                @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+                @endif
 
-                                        @if ($errors->any())
-                                        <div class="alert alert-danger text-danger" role="alert">
-                                            @foreach ($errors->all() as $error)
-                                            {{ $error }}<br>
-                                            @endforeach
-                                        </div>
-                                        @endif
+                @if ($errors->any())
+                <div class="alert alert-danger">
+                    @foreach ($errors->all() as $error)
+                    {{ $error }}<br>
+                    @endforeach
+                </div>
+                @endif
 
-                                        <div class="uk-margin-small uk-width-1-1 uk-inline">
-                                            <span class="uk-form-icon uk-form-icon-flip fas fa-envelope fa-sm"></span>
-                                            <input class="uk-input uk-border-rounded" name="email" id="email"
-                                                type="email" placeholder="Email" required autocomplete="email" autofocus
-                                                value="{{ old('email') }}">
-                                        </div>
+                <form method="POST" action="{{ route('password.email') }}">
+                    @csrf
 
-                                        <div class="uk-margin-small uk-width-1-1">
-                                            <button
-                                                class="uk-button uk-width-1-1 uk-button-primary uk-border-rounded uk-float-left"
-                                                type="submit">Send Password Reset Link</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                                </svg>
+                            </span>
+                            <input class="form-input" name="email" id="email" type="email" placeholder="you@example.com"
+                                required autocomplete="email" autofocus value="{{ old('email') }}">
                         </div>
                     </div>
+
+                    <button class="btn-primary" type="submit">Send Reset Link</button>
+                </form>
+
+                <div class="form-footer">
+                    Don't have an account? <a href="{{ route('register') }}">Create one</a>
                 </div>
             </div>
         </div>
-        <!-- section content end -->
-    </main>
-
-    <style>
-        .mgm {
-            border-radius: 7px;
-            position: fixed;
-            z-index: 90;
-            bottom: 45%;
-            right: 50px;
-            background: #fff;
-            padding: 10px 27px;
-            box-shadow: 0px 5px 13px 0px rgba(0, 0, 0, .3);
-        }
-
-        .mgm a {
-            font-weight: 700;
-            display: block;
-            color: #8BC34A;
-        }
-
-        .mgm a,
-        .mgm a:active {
-            transition: all .2s ease;
-            color: #8BC34A;
-        }
-    </style>
-    <div class="mgm" style="display: none;">
-        <div class="txt" style="color:black;"></div>
     </div>
-
-    <script src="auth/js/vendors/uikit.min.js"></script>
-    <script src="auth/js/vendors/indonez.min.js"></script>
-
-    <script type="text/javascript">
-        var listCountries = ['South Africa', 'USA', 'Germany', 'France', 'Italy', 'South Africa', 'Australia', 'South Africa', 'Canada', 'Argentina', 'Saudi Arabia', 'Mexico', 'South Africa', 'South Africa', 'Venezuela', 'South Africa', 'Sweden', 'South Africa', 'South Africa', 'Italy', 'South Africa', 'United Kingdom', 'South Africa', 'Greece', 'Cuba', 'South Africa', 'Portugal', 'Austria', 'South Africa', 'Panama', 'South Africa', 'South Africa', 'Netherlands', 'Switzerland', 'Belgium', 'Israel', 'Cyprus'];
-        var listPlans = ['$500', '$1,500', '$1,000', '$10,000', '$2,000', '$3,000', '$4,000', '$600', '$700', '$2,500'];
-        var transarray = ['just <b>invested</b>', 'has <b>withdrawn</b>', 'is <b>trading with</b>'];
-        interval = Math.floor(Math.random() * (40000 - 8000 + 1) + 8000);
-        var run = setInterval(request, interval);
-
-        function request() {
-            clearInterval(run);
-            interval = Math.floor(Math.random() * (40000 - 8000 + 1) + 8000);
-            var country = listCountries[Math.floor(Math.random() * listCountries.length)];
-            var transtype = transarray[Math.floor(Math.random() * transarray.length)];
-            var plan = listPlans[Math.floor(Math.random() * listPlans.length)];
-            var msg = 'Someone from <b>' + country + '</b> ' + transtype + ' <a href="javascript:void(0);" onclick="javascript:void(0);">' + plan + '</a>';
-            $(".mgm .txt").html(msg);
-            $(".mgm").stop(true).fadeIn(300);
-            window.setTimeout(function() {
-                $(".mgm").stop(true).fadeOut(300);
-            }, 10000);
-            run = setInterval(request, interval);
-        }
-    </script>
 </body>
 
 </html>
